@@ -58,6 +58,10 @@ export const CartContainer = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   gap: '1.5rem',
+  maxHeight: '70vh',
+  overflowY: 'auto',
+
+  scrollbarWidth: 'none',
 })
 
 export const CartItem = styled('div', {
@@ -90,6 +94,11 @@ export const CartItem = styled('div', {
     background: 'transparent',
     border: 0,
     color: '$green300',
+    cursor: 'pointer',
+
+    '&:hover': {
+      color: '$green500',
+    },
   },
 })
 

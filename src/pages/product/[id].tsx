@@ -1,12 +1,14 @@
 import axios from 'axios'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import Head from 'next/head'
+// import Head from 'next/head'
 import Image from 'next/image'
 import { useState } from 'react'
 import Stripe from 'stripe'
 
+import { useCart } from '../../hooks/useCart'
 import { stripe } from '../../lib/stripe'
 import {
+  BuyButton,
   ImageContainer,
   ProductContainer,
   ProductDetails,
@@ -17,7 +19,7 @@ interface ProductProps {
     id: string
     name: string
     imageUrl: string
-    price: string
+    price: number
     description: string
     defaultPriceId: string
   }
@@ -27,12 +29,16 @@ export default function Product({ product }: ProductProps) {
   const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] =
     useState(false)
 
+  const { AddToCart, checkIfAlreadyInCart } = useCart()
+
+  const isAlreadyInCart = checkIfAlreadyInCart(product.id)
+
   async function handleBuyProduct() {
     try {
       setIsCreatingCheckoutSession(true)
 
       const response = await axios.post('/api/checkout', {
-        priceId: product.defaultPriceId,
+        priceId: [product.defaultPriceId],
       })
 
       const { checkoutUrl } = response.data
@@ -47,11 +53,15 @@ export default function Product({ product }: ProductProps) {
     }
   }
 
+  function handleAddToCart() {
+    AddToCart(product)
+  }
+
   return (
     <>
-      <Head>
+      {/* <Head>
         <title>{product.name} | Ignite shop</title>
-      </Head>
+      </Head> */}
       <ProductContainer>
         <ImageContainer>
           <Image src={product.imageUrl} width={520} height={520} alt="" />
@@ -59,16 +69,32 @@ export default function Product({ product }: ProductProps) {
 
         <ProductDetails>
           <h1>{product.name}</h1>
-          <span>{product.price}</span>
+          <span>
+            {new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }).format(product.price)}
+          </span>
 
           <p>{product.description}</p>
 
-          <button
-            disabled={isCreatingCheckoutSession}
-            onClick={handleBuyProduct}
-          >
-            Comprar agora
-          </button>
+          <div>
+            <BuyButton
+              variant="BUY"
+              disabled={isCreatingCheckoutSession}
+              onClick={handleBuyProduct}
+            >
+              Comprar agora
+            </BuyButton>
+
+            <BuyButton
+              variant="ADDToCart"
+              disabled={isAlreadyInCart}
+              onClick={handleAddToCart}
+            >
+              Adicionar a sacola
+            </BuyButton>
+          </div>
         </ProductDetails>
       </ProductContainer>
     </>
@@ -97,10 +123,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         id: product.id,
         name: product.name,
         imageUrl: product.images[0],
-        price: new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(price.unit_amount / 100),
+        price: price.unit_amount / 100,
         description: product.description,
         defaultPriceId: price.id,
       },

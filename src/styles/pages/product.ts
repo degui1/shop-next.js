@@ -49,24 +49,43 @@ export const ProductDetails = styled('div', {
     color: '$gray300',
   },
 
-  button: {
+  div: {
     marginTop: 'auto',
-    backgroundColor: '$green500',
-    border: 0,
-    color: '$white',
-    borderRadius: 8,
-    padding: '1.25rem',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: '$md',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+})
 
-    '&:disabled': {
-      opacity: 0.6,
-      cursor: 'not-allowed',
-    },
+export const BuyButton = styled('button', {
+  marginTop: 'auto',
+  border: 0,
+  color: '$white',
+  borderRadius: 8,
+  padding: '1.25rem',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  fontSize: '$md',
 
-    '&:not(:disabled):hover': {
-      backgroundColor: '$green300',
+  '&:disabled': {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
+
+  variants: {
+    variant: {
+      BUY: {
+        backgroundColor: '$green500',
+        '&:not(:disabled):hover': {
+          backgroundColor: '$green300',
+        },
+      },
+      ADDToCart: {
+        backgroundColor: 'transparent',
+        '&:not(:disabled):hover': {
+          backgroundColor: '$gray800',
+        },
+      },
     },
   },
 })

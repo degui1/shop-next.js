@@ -1,30 +1,47 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { Handbag } from 'phosphor-react'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
 import logoImage from '../assets/logo.svg'
-import { CartContext } from '../context/CartContext'
+import { useCart } from '../hooks/useCart'
 import { theme } from '../styles'
-import { CartButton, Header } from '../styles/pages/app'
+import {
+  ButtonContainer,
+  CartButton,
+  Header,
+  ProductCounter,
+} from '../styles/pages/app'
 import { Menu } from './Menu'
 
 export function HeaderComponent() {
   const [openMenu, setOpenMenu] = useState(false)
-  const { amount } = useContext(CartContext)
+  const { cartState } = useCart()
+
+  const amount = cartState.products.length
+
   return (
     <>
       <Header>
-        <Image src={logoImage} alt="" />
+        <Link href="/">
+          <Image src={logoImage} alt="" />
+        </Link>
 
-        <CartButton
-          variant={'filled'}
+        <ButtonContainer
           onClick={() => {
             setOpenMenu((state) => !state)
           }}
         >
-          <span>{amount}</span>
-          <Handbag size={24} color={theme.colors.gray400.value} />
-        </CartButton>
+          <CartButton>
+            <Handbag
+              size={24}
+              color={theme.colors.gray400.value}
+              weight="bold"
+            />
+          </CartButton>
+
+          {amount > 0 && <ProductCounter>{amount}</ProductCounter>}
+        </ButtonContainer>
       </Header>
 
       <Menu
